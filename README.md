@@ -1,13 +1,12 @@
 # tensorrt_demos
 
-Examples demonstrating how to optimize caffe/tensorflow/darknet models with TensorRT and run inferencing on NVIDIA Jetson or x86_64 PC platforms.  Highlights:  (The FPS numbers in this README are test results against JetPack 4.3, i.e. TensorRT 6, on Jetson Nano.)
+The examples in this repo are from ([JK Jung blog](https://jkjung-avt.github.io/) and demonstrate how to optimize caffe/tensorflow/darknet models with TensorRT and run inferencing on NVIDIA Jetson nano.   
 
 * Run an optimized "GoogLeNet" image classifier at ~60 FPS on Jetson Nano.
 * Run a very accurate optimized "MTCNN" face detector at 6~11 FPS on Jetson Nano.
 * Run an optimized "ssd_mobilenet_v1_coco" object detector ("trt_ssd_async.py") at 27~28 FPS on Jetson Nano.
 * Run an optimized "yolov3-416" object detector at ~3 FPS on Jetson Nano.
-* All demos work on Jetson TX2, AGX Xavier, Xavier NX ([link](https://github.com/jkjung-avt/tensorrt_demos/issues/19#issue-517897927) and [link](https://github.com/jkjung-avt/tensorrt_demos/issues/30)), and run much faster!
-* Furthermore, all demos should work on x86_64 PC with NVIDIA GPU(s) as well.  Some minor tweaks would be needed.  Please refer to [README_x86.md](https://github.com/jkjung-avt/tensorrt_demos/blob/master/README_x86.md) for more information.
+
 
 Table of contents
 -----------------
@@ -22,11 +21,35 @@ Table of contents
 Prerequisite
 ------------
 
-The code in this repository was tested on both Jetson Nano and Jetson TX2 Devkits.  In order to run the demos below, first make sure you have the proper version of image (JetPack) installed on the target Jetson system.  For example, this is my blog post about setting up a Jetson Nano: [Setting up Jetson Nano: The Basics](https://jkjung-avt.github.io/setting-up-nano/).
+The code in this repository is tested on  Jetson Nano.  In order to run the demos below, first make sure you have the JetPack 4.4 installed on the Jetson nano system.  
 
-More specifically, the target Jetson system must have TensorRT libraries installed.  **Demo #1 and Demo #2 should work for TensorRT 3.x ~ 7.x, while Demo #3 and Demo #4 would require TensorRT 5.x ~ 7.x.**
+## Hardware
+- Jetson nano
+- HDMA screen
+- USB keyboard and mouse
+- Wifi, complete kit
+- Makeronics Developer Kit for Jetson Nano (Wifi included)
+- SD card reader
+- Logitech USB camera
 
-You could check which version of TensorRT has been installed on your Jetson system by looking at file names of the libraries.  For example, TensorRT v5.1.6 (from JetPack-4.2.2) was present on one of my Jetson Nano DevKits.
+## Step 1: Flash NVIDIA’s Jetson Nano Developer Kit .img to a microSD
+NVIDIA JetPack 4.4  bundles most of the developer tools required on the Jetson platform, including system profiler, graphics debugger, and the CUDA Toolkit
+- L4T R32.4.2
+- CUDA 10.2
+- cuDNN 8.0.0 (Developer Preview)
+- TensorRT 7.1.0 (Developer Preview)
+- VisionWorks 1.6
+- OpenCV 4.1
+- Vulkan 1.2
+- VPI 0.2.0 (Developer Preview)
+- Nsight Systems 2020.2
+- Nsight Graphics 2020.1
+- Nsight Compute 2019.3
+
+Download Jetpack 4.4 from ([here]https://developer.nvidia.com/embedded/jetpack). I am using my mac and a microSD card reader. You will need to download and install BalenaEtcher a disk image flashing tool. Insert the microSD into the card reader, and then plug the card reader into a USB port on your computer. Start balenaEtcher and proceed to flash. Once flashing is completed, eject and you are ready to move to step 2.
+
+## Step 2: Boot Jetson Nano with the microSD
+Insert the microSD into the Jetson Nano, connect thescreen, keyboard, mouse. Apply power. Insert the power plug of your power adapter into your Jetson Nano (use the J48 jumper if using a 20W barrel plug supply). You will see the NVIDIA + Ubuntu 18.04 desktop, you should configure your wired or wireless network settings, langage and basic linux configuration including setting a password.
 
 ```shell
 $ ls /usr/lib/aarch64-linux-gnu/libnvinfer.so*
@@ -165,7 +188,7 @@ Assuming this repository has been cloned at "${HOME}/project/tensorrt_demos", fo
 
    Here's the result (JetPack-4.2.2, i.e. TensorRT 5).  Frame rate was good (over 20 FPS).
 
-   ![Huskies detected](https://raw.githubusercontent.com/jkjung-avt/tensorrt_demos/master/doc/huskies.png)
+ 
 
    NOTE: When running this demo with TensorRT 6 (JetPack-4.3) on the Jetson Nano, I encountered the following error message which could probably be ignored for now.  Quote from [NVIDIA's NVES_R](https://devtalk.nvidia.com/default/topic/1065233/tensorrt/-tensorrt-error-could-not-register-plugin-creator-flattenconcat_trt-in-namespace-/post/5394191/#5394191): `This is a known issue and will be fixed in a future version.`
 
@@ -181,9 +204,6 @@ Assuming this repository has been cloned at "${HOME}/project/tensorrt_demos", fo
                         --filename ${HOME}/Videos/Nonverbal_Communication.mp4
    ```
 
-   (Click on the image below to see the whole video clip...)
-
-   [![Hands detected](https://raw.githubusercontent.com/jkjung-avt/tensorrt_demos/master/doc/hands.png)](https://youtu.be/3ieN5BBdDF0)
 
 3. The "trt_ssd.py" demo program could also take various image inputs.  Refer to step 5 in Demo #1 again.
 
@@ -248,44 +268,6 @@ Assuming this repository has been cloned at "${HOME}/project/tensorrt_demos", fo
 
    The last step ("onnx_to_tensorrt.py") takes a little bit more than half an hour to complete on my Jetson Nano DevKit.  When that is done, the optimized TensorRT engine would be saved as "yolov3-416.trt".
 
-4. Test the YOLOv3 TensorRT engine with the "dog.jpg" image.
-
-   ```shell
-   $ wget https://raw.githubusercontent.com/pjreddie/darknet/master/data/dog.jpg -O ${HOME}/Pictures/dog.jpg
-   $ python3 trt_yolov3.py --model yolov3-416
-                           --image --filename ${HOME}/Pictures/dog.jpg
-   ```
-
-   This was tested against JetPack-4.3, i.e. TensorRT 6.
-
-   ![YOLOv3-416 detection result on dog.jpg](https://raw.githubusercontent.com/jkjung-avt/tensorrt_demos/master/doc/dog_trt_yolov3.png)
-
-5. The "trt_yolov3.py" demo program could also take various image inputs.  Refer to step 5 in Demo #1 again.
-
-6. Similar to step 5 of Demo #3, I also created "eval_yolov3.py" for evaluating mAP of the optimized YOLOv3 engines.
-
-   ```shell
-   $ python3 eval_yolov3.py --model yolov3-288
-   $ python3 eval_yolov3.py --model yolov3-416
-   $ python3 eval_yolov3.py --model yolov3-608
-   ```
-
-   I evaluated all of yolov3-tiny-288, yolov3-tiny-416, yolov3-288, yolov3-416 and yolov3-608 TensorRT engines with COCO "val2017" data and got the following results.  The FPS (frames per second) numbers were measured using "trt_yolov3.py" on my Jetson Nano DevKit with JetPack-4.3.
-
-   | TensorRT engine        | mAP @<br>IoU=0.5:0.95 |  mAP @<br>IoU=0.5  | FPS on Nano |
-   |:-----------------------|:---------------------:|:------------------:|:-----------:|
-   | yolov3-tiny-288 (FP16) |          0.077        |        0.158       |     20.9    |
-   | yolov3-tiny-416 (FP16) |          0.096        |        0.202       |     14.2    |
-   | yolov3-288 (FP16)      |          0.331        |        0.600       |     5.42    |
-   | yolov3-416 (FP16)      |          0.373        |        0.664       |     3.07    |
-   | yolov3-608 (FP16)      |          0.376        |        0.665       |     1.53    |
-   | yolov3-608 (FP32)      |          0.376        |        0.665       |      --     |
-
-7. Check out my blog post for implementation details:
-
-   * [TensorRT ONNX YOLOv3](https://jkjung-avt.github.io/tensorrt-yolov3/)
-   * [Verifying mAP of TensorRT Optimized SSD and YOLOv3 Models](https://jkjung-avt.github.io/trt-detection-map/)
-   * For adapting the code to your own custom trained YOLOv3 models: [TensorRT YOLOv3 For Custom Trained Models](https://jkjung-avt.github.io/trt-yolov3-custom/)
 
 Licenses
 --------
