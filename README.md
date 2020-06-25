@@ -1,4 +1,4 @@
-# Tensorrt demos
+# Tensorflow-TensorRt demos
 
 The examples in this repo are from ([JK Jung blog](https://jkjung-avt.github.io/) and demonstrate how to optimize caffe/tensorflow/darknet models with TensorRT and run inferencing on NVIDIA Jetson nano.   
 
@@ -58,9 +58,7 @@ $ ls /usr/lib/aarch64-linux-gnu/libnvinfer.so*
 /usr/lib/aarch64-linux-gnu/libnvinfer.so.5.1.6
 ```
 
-Furthermore, the demo programs require "cv2" (OpenCV) module for python3.  You could use the "cv2" module which came in the JetPack.  Or, if you'd prefer building your own, refer to [Installing OpenCV 3.4.6 on Jetson Nano](https://jkjung-avt.github.io/opencv-on-nano/) for how to build from source and install opencv-3.4.6 on your Jetson system.
 
-Lastly, if you plan to run Demo #3 (SSD), you'd also need to have "tensorflowi-1.x" installed.  You could probably use the [official tensorflow wheels provided by NVIDIA](https://docs.nvidia.com/deeplearning/frameworks/pdf/Install-TensorFlow-Jetson-Platform.pdf), or refer to [Building TensorFlow 1.12.2 on Jetson Nano](https://jkjung-avt.github.io/build-tensorflow-1.12.2/) for how to install tensorflow-1.12.2 on the Jetson system.
 
 
 
